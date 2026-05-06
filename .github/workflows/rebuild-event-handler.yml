@@ -54,7 +54,7 @@ jobs:
               # Commit any template changes from init
               git -C /project add -A
               if ! git -C /project diff --cached --quiet; then
-                git -C /project commit -m "chore: apply thepopebot init after upgrade"
+                git -C /project commit -m "chore: apply thepopebot init after upgrade [skip ci]"
                 git -C /project push origin main
               fi
 
@@ -67,11 +67,6 @@ jobs:
           STATUS=$(docker exec thepopebot-event-handler cat /tmp/.rebuild-status)
           docker exec thepopebot-event-handler rm -f /tmp/.rebuild-status
           echo "status=$STATUS" >> $GITHUB_OUTPUT
-
-      - name: Reload (no version change)
-        if: steps.pull.outputs.status == 'RELOAD'
-        run: |
-          docker exec thepopebot-event-handler npx pm2 reload all
 
       - name: Pull new image and restart container
         if: steps.pull.outputs.status == 'VERSION_CHANGED'
